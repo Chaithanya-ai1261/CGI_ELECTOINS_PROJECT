@@ -23,10 +23,11 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 // MODULE: File Paths
-const USERS_FILE = path.join(__dirname, 'users.json');
-const VOTES_FILE = path.join(__dirname, 'votes.json');
-const ELECTION_FILE = path.join(__dirname, 'election.json');
-const WHITELIST_FILE = path.join(__dirname, 'whitelist.json');
+const dataDir = process.env.DATA_DIR || __dirname;
+const USERS_FILE = path.join(dataDir, 'users.json');
+const VOTES_FILE = path.join(dataDir, 'votes.json');
+const ELECTION_FILE = path.join(dataDir, 'election.json');
+const WHITELIST_FILE = path.join(dataDir, 'whitelist.json');
 
 // MODULE: Data Storage Helpers
 function loadJson(filePath, defaultData) {
@@ -87,7 +88,7 @@ app.post('/api/users/login', (req, res) => {
 // Request Registration OTP (Checks Whitelist Permission)
 app.post('/api/users/request-reg-otp', (req, res) => {
   const { id, name, phone, email, password } = req.body;
-  
+
   if (!whitelist.includes(email.toLowerCase())) {
     return res.status(403).json({ error: 'Permission Denied: This email is not authorized to register.' });
   }
